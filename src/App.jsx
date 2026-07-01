@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import HUD from "./components/HUD"
 import EngineerMode from "./modes/EngineerMode/EngineerMode"
 import SageMode from "./modes/SageMode/SageMode"
-import ProjectBlackbox from "./modes/ProjectBlackbox/ProjectBlackbox"
+import ProjectBlackBox from "./modes/ProjectBlackBox/ProjectBlackBox"
 import SoundManager from "./components/SoundManager"
 import SageLogo from "./components/SageLogo"
 import SageAI from "./components/SageAI"
@@ -170,7 +170,7 @@ transition
 
 >
 
-🔒 Project Blackbox
+🔒 Project BlackBox
 
 </motion.button>
 
@@ -284,7 +284,7 @@ className="mb-10 border border-white px-5 py-2 rounded-lg hover:bg-white hover:t
 </button>
 
 
-<ProjectBlackbox />
+<ProjectBlackBox />
 
 </motion.div>
 

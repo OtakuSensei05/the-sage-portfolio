@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 
 
-function ProjectBlackbox() {
+function ProjectBlackBox() {
 
 
 return (
@@ -245,4 +245,4 @@ Development Pipeline
 }
 
 
-export default ProjectBlackbox
+export default ProjectBlackBox
