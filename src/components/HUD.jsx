@@ -1,53 +1,22 @@
-import { motion } from "framer-motion"
+import { motion } from 'framer-motion'
+import { getMode } from '../lib/theme'
 
-
-function HUD(){
-
-return (
-
-<div className="fixed top-5 left-5 z-20">
-
-
-<motion.div
-
-initial={{opacity:0,x:-50}}
-
-animate={{opacity:1,x:0}}
-
-className="p-5 rounded-xl border border-cyan-400 bg-black/40 backdrop-blur-md"
-
->
-
-
-<p className="text-cyan-400">
-
-● SYSTEM ONLINE
-
-</p>
-
-
-<p>
-
-AI CORE: ACTIVE
-
-</p>
-
-
-<p>
-
-ENGINEERING MODE: READY
-
-</p>
-
-
-</motion.div>
-
-
-</div>
-
-)
-
+export default function HUD({ modeId = 'home' }) {
+  const mode = getMode(modeId)
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -16 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.6, duration: 0.5 }}
+      className="sage-hud"
+      aria-hidden="true"
+    >
+      <p className="sage-hud__row">
+        <span className="sage-hud__dot" style={{ background: mode.accent }} />
+        SYSTEM ONLINE
+      </p>
+      <p className="sage-hud__row sage-hud__row--muted">AI CORE · ACTIVE</p>
+      <p className="sage-hud__row sage-hud__row--muted">{mode.label.toUpperCase()} · READY</p>
+    </motion.div>
+  )
 }
-
-
-export default HUD

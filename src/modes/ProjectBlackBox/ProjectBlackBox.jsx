@@ -1,248 +1,91 @@
-import { motion } from "framer-motion"
-
-
-function ProjectBlackBox() {
-
-
-return (
-
-<motion.div
-
-initial={{opacity:0, y:50}}
-
-animate={{opacity:1, y:0}}
-
-transition={{duration:0.8}}
-
-className="max-w-5xl"
-
->
-
-
-<h1 className="text-5xl font-bold mb-5">
-
-Project Blackbox
-
-</h1>
-
-
-
-<h2 className="text-xl text-red-400 mb-6">
-
-Research & Innovation Laboratory
-
-</h2>
-
-
-
-<p className="text-gray-300 leading-relaxed mb-10">
-
-
-A digital laboratory documenting future projects,
-engineering experiments and ideas.
-
-This is where concepts move from imagination
-towards reality.
-
-
-</p>
-
-
-
-
-
-<div className="grid md:grid-cols-2 gap-5">
-
-
-
-
-
-<div className="p-6 rounded-xl border border-red-400 bg-white/5">
-
-
-<h3 className="text-2xl mb-3">
-
-🤖 Autonomous Robotics
-
-</h3>
-
-
-<p>
-
-Future exploration of robotic systems,
-automation and intelligent machines.
-
-</p>
-
-
-<span className="text-red-400">
-
-STATUS: PLANNED
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="p-6 rounded-xl border border-cyan-400 bg-white/5">
-
-
-<h3 className="text-2xl mb-3">
-
-🌐 AI Engineering Systems
-
-</h3>
-
-
-<p>
-
-Exploring AI applications in engineering,
-research and productivity.
-
-</p>
-
-
-<span className="text-cyan-400">
-
-STATUS: LEARNING
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="p-6 rounded-xl border border-yellow-400 bg-white/5">
-
-
-<h3 className="text-2xl mb-3">
-
-⚙️ Embedded Systems
-
-</h3>
-
-
-<p>
-
-Microcontrollers, sensors,
-electronics and automation projects.
-
-</p>
-
-
-<span className="text-yellow-400">
-
-STATUS: UPCOMING
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="p-6 rounded-xl border border-purple-400 bg-white/5">
-
-
-<h3 className="text-2xl mb-3">
-
-🚀 Future Technologies
-
-</h3>
-
-
-<p>
-
-Exploring ideas inspired by space,
-advanced engineering and innovation.
-
-</p>
-
-
-<span className="text-purple-400">
-
-STATUS: CONCEPT
-
-</span>
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-<div className="mt-10 p-6 rounded-xl border border-white bg-white/5">
-
-
-<h2 className="text-3xl mb-5">
-
-Development Pipeline
-
-</h2>
-
-
-
-<div className="space-y-4 text-gray-300">
-
-
-<p>
-01 — Research & Learn
-</p>
-
-
-<p>
-02 — Design & Simulate
-</p>
-
-
-<p>
-03 — Prototype
-</p>
-
-
-<p>
-04 — Improve & Deploy
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-</motion.div>
-
-
-)
-
+import { motion } from 'framer-motion'
+import GlassCard from '../../components/GlassCard'
+import ProjectCard from '../../components/ProjectCard'
+import ProjectDetail from '../../components/ProjectDetail'
+import { projects, directions, pipeline, caseStudyBlueprint } from '../../data/projects'
+import { getMode } from '../../lib/theme'
+
+const mode = getMode('blackbox')
+
+export default function ProjectBlackBox({ slug, onOpenProject, onBack }) {
+  const activeProject = slug ? projects.find((p) => p.slug === slug) : null
+
+  if (slug && activeProject) {
+    return <ProjectDetail project={activeProject} onBack={onBack} />
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+      <h1 className="font-display text-3xl md:text-4xl">Project Blackbox</h1>
+      <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400">
+        The research and engineering-project archive. Concepts move from imagination toward reality here — each entry
+        becomes a full case study once it's real.
+      </p>
+
+      <Section title="Case studies">
+        {projects.length === 0 ? (
+          <EmptyArchive />
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {projects.map((p, i) => (
+              <ProjectCard key={p.slug} project={p} onOpen={onOpenProject} index={i} />
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Section title="Research directions">
+        <div className="grid gap-5 sm:grid-cols-2">
+          {directions.map((d) => (
+            <GlassCard key={d.id} accent={mode.accent}>
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-display text-sm">{d.title}</h3>
+                <span className="font-mono text-[0.65rem] text-slate-500">{d.status.toUpperCase()}</span>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">{d.text}</p>
+            </GlassCard>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Development pipeline">
+        <ol className="grid gap-4 sm:grid-cols-4">
+          {pipeline.map((step, i) => (
+            <li key={step.title} className="rounded-xl border border-white/8 p-4">
+              <p className="font-mono text-xs" style={{ color: mode.accent }}>
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3 className="mt-2 font-display text-sm">{step.title}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+    </motion.div>
+  )
 }
 
+function Section({ title, children }) {
+  return (
+    <section className="mb-14 mt-14">
+      <h2 className="mb-5 font-display text-lg">{title}</h2>
+      {children}
+    </section>
+  )
+}
 
-export default ProjectBlackBox
+function EmptyArchive() {
+  return (
+    <div className="rounded-2xl border border-dashed border-white/12 p-8 text-center">
+      <p className="text-sm text-slate-400">No case studies published yet — this archive is being built.</p>
+      <p className="mt-4 font-mono text-xs tracking-widest text-slate-600">EVERY CASE STUDY WILL COVER</p>
+      <div className="mt-3 flex flex-wrap justify-center gap-2">
+        {caseStudyBlueprint.map((item) => (
+          <span key={item} className="sage-pill">
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
