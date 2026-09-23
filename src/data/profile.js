@@ -36,7 +36,7 @@ export const profile = {
   contact: {
     email: 'muchabayakelvin@gmail.com', // e.g. 'name@example.com'
     phone: +263777387690, // e.g. '+263 ...'
-    linkedin: 'www.linkedin.com/in/kelvin-muchabaya', // full URL
+    linkedin: 'https://www.linkedin.com/in/kelvin-muchabaya', // full URL
     // Derived from the repository owner in your GitHub URL (OtakuSensei05).
     github: 'https://github.com/OtakuSensei05',
   },
