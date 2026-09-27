@@ -21,6 +21,12 @@ export default function BootSequence({ onComplete }) {
   useEffect(() => {
     play('boot.mp3', 0.3)
     const t = setTimeout(() => setSkippable(true), BUTTON_DELAY * 1000)
+    // Start fetching the SageCore chunk (three.js and friends, ~900KB) now,
+    // during the boot animation, rather than waiting until the user reaches
+    // the home screen that actually renders it. The boot sequence runs for
+    // several seconds regardless, so this download rides alongside it for
+    // free — by "Enter system", the heavy chunk is normally already cached.
+    import('./SageCore')
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

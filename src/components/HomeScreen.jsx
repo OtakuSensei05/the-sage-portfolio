@@ -1,17 +1,42 @@
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
-import SageCore from './SageCore'
 import Starfield from './Starfield'
+
+// Lazy-loaded: three.js is the single heaviest dependency in this app
+// (~900KB), and it should never be part of the initial page load. It's
+// separately prefetched during the boot animation (see BootSequence.jsx),
+// so by the time this Suspense boundary actually needs it, it's usually
+// already cached — the fallback below is a safety net, not the common case.
+const SageCore = lazy(() => import('./SageCore'))
 import ModeCard from './ModeCard'
 import HUD from './HUD'
 import AIInterface from './AIInterface'
 import SoundToggle from './SoundToggle'
 import { profile } from '../data/profile'
-import { modeList } from '../lib/theme'
+import { modeList, getMode } from '../lib/theme'
 
 const DESCRIPTIONS = {
   engineer: 'Technical profile · Projects · Skills · CV',
   sage: 'Knowledge · Research · Ideas',
   blackbox: 'R&D · Experiments · Future builds',
+}
+
+// Shown for the brief moment (usually near-instant, since the Core is
+// prefetched during boot) before the 3D module finishes loading — a plain
+// CSS glow in the same shape and colors, so there's never a jarring blank
+// gap where the centerpiece should be.
+function CorePlaceholder() {
+  const mode = getMode('home')
+  return (
+    <div
+      aria-hidden="true"
+      className="sage-core-fade h-full w-full rounded-full"
+      style={{
+        background: `radial-gradient(circle at 50% 45%, ${mode.core.a}55, ${mode.core.b}22 45%, transparent 72%)`,
+        filter: 'blur(2px)',
+      }}
+    />
+  )
 }
 
 export default function HomeScreen({ onNavigate }) {
@@ -45,7 +70,9 @@ export default function HomeScreen({ onNavigate }) {
           transition={{ delay: 0.15, duration: 0.9, ease: 'easeOut' }}
           className="mt-2 h-64 w-64 sm:h-80 sm:w-80"
         >
-          <SageCore modeId="home" interactive className="sage-core-fade h-full w-full" />
+          <Suspense fallback={<CorePlaceholder />}>
+            <SageCore modeId="home" interactive className="sage-core-fade h-full w-full" />
+          </Suspense>
         </motion.div>
 
         <motion.h1

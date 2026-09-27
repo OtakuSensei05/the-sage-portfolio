@@ -1,9 +1,15 @@
+import { lazy, Suspense } from 'react'
 import Navigation from './Navigation'
 import HUD from './HUD'
 import AIInterface from './AIInterface'
-import SageCore from './SageCore'
 import Starfield from './Starfield'
 import { getMode } from '../lib/theme'
+
+// Lazy-loaded for the same reason as in HomeScreen — this is a small,
+// low-opacity decorative instance, so an empty Suspense fallback (nothing)
+// is fine here; there's no jarring gap since it's subtle background color
+// to begin with.
+const SageCore = lazy(() => import('./SageCore'))
 
 export default function ModeShell({ modeId, onNavigate, children }) {
   const mode = getMode(modeId)
@@ -16,7 +22,9 @@ export default function ModeShell({ modeId, onNavigate, children }) {
             but stays small, off to the side, and behind the content column so
             it never competes with the text visitors are actually reading. */}
         <div className="pointer-events-none absolute -right-24 -top-24 hidden h-[420px] w-[420px] opacity-25 lg:block">
-          <SageCore modeId={modeId} className="sage-core-fade h-full w-full" />
+          <Suspense fallback={null}>
+            <SageCore modeId={modeId} className="sage-core-fade h-full w-full" />
+          </Suspense>
         </div>
         <div className="sage-vignette" />
       </div>
