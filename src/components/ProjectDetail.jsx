@@ -15,7 +15,7 @@ export default function ProjectDetail({ project, onBack }) {
       </button>
 
       <p className="font-mono text-xs tracking-widest text-slate-500">
-        {project.category} · {project.date} · {project.status?.toUpperCase()}
+        {[project.category, project.date, project.status?.toUpperCase()].filter(Boolean).join(' · ')}
       </p>
       <h1 className="mt-2 font-display text-3xl">{project.title}</h1>
       {project.description && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400">{project.description}</p>}

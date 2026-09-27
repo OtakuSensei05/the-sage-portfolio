@@ -7,7 +7,29 @@
 // sections with no content are simply not shown.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const projects = []
+export const projects = [
+  {
+    slug: 'automatic-liquid-dispenser',
+    title: 'Automatic Liquid Dispenser',
+    category: 'Embedded Systems',
+    status: 'Completed',
+    summary:
+      'A contactless liquid dispenser that detects a cup and dispenses automatically, built around an ESP32 with IR and ultrasonic sensing.',
+    description:
+      'An automatic liquid dispenser that senses when a cup is placed underneath it and turns on a pump to dispense liquid, without needing to be touched.',
+    technologies: ['ESP32', 'IR Proximity Sensor', 'Ultrasonic Sensor', '3D Printing'],
+    hardware: [
+      'ESP32 microcontroller — reads the sensors and controls the pump',
+      'IR proximity sensor — detects when a cup is placed under the dispenser',
+      'Ultrasonic sensor',
+      'Liquid pump',
+      '3D printed housing',
+    ],
+    // Still to fill in once the project document is found: problem statement,
+    // objective, approach detail, software list, results, lessons learned,
+    // future improvements, and any photos.
+  },
+]
 
 // Research directions from the original site. These are directions, not
 // completed projects, and are labelled with their honest status.

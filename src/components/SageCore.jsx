@@ -48,6 +48,7 @@ const DiskMaterial = shaderMaterial(
     uColorB: new THREE.Color('#b98bff'),
     uSpeed: 0.4,
     uOpacity: 1,
+    uPhase: 0,
   },
   /* vertex */ `
     varying vec2 vUv;
@@ -63,6 +64,7 @@ const DiskMaterial = shaderMaterial(
     uniform vec3 uColorB;
     uniform float uSpeed;
     uniform float uOpacity;
+    uniform float uPhase;
 
     // cheap hash-based noise — no external deps
     float hash(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
@@ -89,7 +91,7 @@ const DiskMaterial = shaderMaterial(
       // ONE slow, coherent drift — this is the only source of motion in the
       // whole Core. Angular frequencies kept low so phase changes read as a
       // gentle swirl, not a strobe.
-      float drift = uTime * uSpeed * 0.16;
+      float drift = uTime * uSpeed * 0.16 + uPhase;
       float streaks = noise(vec2(angle * 4.0 + drift, radius * 6.0 - drift * 0.4));
       streaks += 0.55 * noise(vec2(angle * 8.0 - drift * 1.3, radius * 11.0));
       streaks += 0.3 * noise(vec2(angle * 3.0 + drift * 0.5, radius * 3.5));
@@ -162,24 +164,58 @@ function PhotonRing({ radius, color }) {
   )
 }
 
+// The disk is deliberately NOT a single flat plane. A perfectly flat plane
+// viewed edge-on (which free orbiting makes reachable) shrinks to a
+// zero-width line — that's a real geometry problem, not a style one. Instead
+// this stacks several slightly-offset, slightly-scaled layers into genuine
+// volumetric depth, so the "mist" always reads as a puffy cloud wrapping the
+// sphere, from any angle, the way the reference photos do.
+const DISK_LAYERS = [
+  { offset: -0.075, scale: 0.92, opacity: 0.55, phase: 0.0 },
+  { offset: -0.03, scale: 1.0, opacity: 0.8, phase: 1.7 },
+  { offset: 0.0, scale: 1.05, opacity: 1.0, phase: 3.1 },
+  { offset: 0.03, scale: 1.0, opacity: 0.8, phase: 4.6 },
+  { offset: 0.075, scale: 0.92, opacity: 0.55, phase: 6.0 },
+]
+
+function DiskLayer({ layer, colorA, colorB, speed, segments }) {
+  const ref = useRef()
+  useFrame((_, delta) => {
+    if (!ref.current) return
+    ref.current.material.uTime += delta
+    ref.current.material.uColorA.lerp(colorA, 0.04)
+    ref.current.material.uColorB.lerp(colorB, 0.04)
+    ref.current.material.uSpeed = speed
+  })
+  return (
+    <mesh ref={ref} position={[0, layer.offset, 0]} scale={layer.scale}>
+      <circleGeometry args={[2.1, segments]} />
+      <diskMaterial
+        uColorA={colorA}
+        uColorB={colorB}
+        uOpacity={layer.opacity}
+        uPhase={layer.phase}
+        transparent
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  )
+}
+
 function Core({ modeId, quality }) {
-  const disk = useRef()
   const horizon = useRef()
   const mode = getMode(modeId)
   const colorA = useMemo(() => new THREE.Color(mode.core.a), [mode.core.a])
   const colorB = useMemo(() => new THREE.Color(mode.core.b), [mode.core.b])
+  const layers = quality === 'low' ? DISK_LAYERS.slice(1, 4) : DISK_LAYERS
 
-  useFrame((_, delta) => {
-    if (disk.current) {
-      disk.current.material.uTime += delta
-      disk.current.material.uColorA.lerp(colorA, 0.04)
-      disk.current.material.uColorB.lerp(colorB, 0.04)
-      disk.current.material.uSpeed = mode.core.speed
-    }
+  useFrame(() => {
     if (horizon.current) horizon.current.material.uColorA.lerp(colorA, 0.04)
   })
 
-  const diskSegments = quality === 'low' ? 48 : 128
+  const diskSegments = quality === 'low' ? 40 : 96
   const horizonRadius = 0.62
 
   return (
@@ -194,21 +230,20 @@ function Core({ modeId, quality }) {
 
       <PhotonRing radius={horizonRadius} color={colorA} />
 
-      {/* The disk mesh itself never rotates — all visible motion comes
-          from the shader's internal time-based drift (see DiskMaterial
-          above). One motion source only. */}
+      {/* Layers never rotate — all visible motion comes from each layer's
+          own shader drift (see DiskMaterial above), offset per-layer via
+          uPhase so the stack reads as depth, not a flat repeated stamp. */}
       <group rotation={[-Math.PI / 2, 0, 0]}>
-        <mesh ref={disk}>
-          <circleGeometry args={[2.1, diskSegments]} />
-          <diskMaterial
-            uColorA={colorA}
-            uColorB={colorB}
-            transparent
-            depthWrite={false}
-            side={THREE.DoubleSide}
-            blending={THREE.AdditiveBlending}
+        {layers.map((layer, i) => (
+          <DiskLayer
+            key={i}
+            layer={layer}
+            colorA={colorA}
+            colorB={colorB}
+            speed={mode.core.speed}
+            segments={diskSegments}
           />
-        </mesh>
+        ))}
       </group>
     </group>
   )
@@ -372,6 +407,12 @@ export default function SageCore({ modeId = 'home', interactive = false, classNa
               enableRotate
               minDistance={2.6}
               maxDistance={7}
+              // Free horizontal spin (twist it and see it from any side),
+              // but bounded vertical tilt — a flat disk viewed edge-on
+              // collapses to a zero-width line, so we never let the camera
+              // reach that degenerate angle in either direction.
+              minPolarAngle={Math.PI / 2 - 0.75}
+              maxPolarAngle={Math.PI / 2 + 0.75}
               enableDamping
               dampingFactor={0.08}
               autoRotate={!reducedMotion}

@@ -22,18 +22,18 @@ export const focusAreas = [
 // Toolkit, grouped by discipline. `items` are names only.
 export const toolkit = [
   { group: 'Design & analysis', items: ['SolidWorks', 'AutoCAD', 'CAE'] },
-  { group: 'Electronics & embedded', items: ['Proteus', 'Electronics', 'Microprocessors'] },
+  { group: 'Electronics & embedded', items: ['Proteus', 'Electronics', 'Microprocessors', 'ESP32'] },
   { group: 'Software', items: ['JavaScript', 'VS Code', 'NetBeans', 'Programming'] },
   { group: 'Systems', items: ['Control systems', 'Automation'] },
 ]
 
 // Flat tool/software list (used by the AI knowledge base).
-export const tools = ['SolidWorks', 'AutoCAD', 'Proteus', 'VS Code', 'NetBeans', 'JavaScript']
+export const tools = ['SolidWorks', 'AutoCAD', 'Proteus', 'VS Code', 'NetBeans', 'JavaScript', 'ESP32']
 
 // Tools mentioned as possibilities but NOT yet confirmed by Kelvin.
 // They are intentionally NOT displayed and NOT given to the AI.
 // Move an item into `toolkit` above once you confirm you actually use it.
-export const toConfirm = ['MATLAB/Simulink', 'ESP32', 'PIC / mikroC']
+export const toConfirm = ['MATLAB/Simulink', 'PIC / mikroC']
 
 export const academicRecord = [
   {
