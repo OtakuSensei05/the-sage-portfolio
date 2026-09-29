@@ -9,16 +9,23 @@ import SageMode from './modes/SageMode/SageMode'
 import ProjectBlackBox from './modes/ProjectBlackBox/ProjectBlackBox'
 import { useHashRoute } from './lib/useHashRoute'
 import { useSound } from './lib/sound'
+import { startAmbient, useAmbient } from './lib/ambient'
 
 const VALID_MODES = new Set(['engineer', 'sage', 'blackbox'])
 
 export default function App() {
   const [booted, setBooted] = useState(false)
   const { segments, navigate } = useHashRoute()
-  const { play } = useSound()
+  const { play, muted } = useSound()
 
   const [modeId, slug] = segments
   const activeMode = VALID_MODES.has(modeId) ? modeId : null
+
+  // Mounted once at the app root regardless of boot state, so it always
+  // retunes correctly the moment ambience actually starts. Muted until the
+  // user reaches "Enter system" (see startAmbient below) — this hook alone
+  // never triggers audio, it only ever adjusts an already-started engine.
+  useAmbient(activeMode || 'home', muted || !booted)
 
   const goTo = (path) => {
     play('Click2.mp3', 0.25)
@@ -32,6 +39,7 @@ export default function App() {
           key="boot"
           onComplete={() => {
             play('activate.mp3', 0.3)
+            startAmbient()
             setBooted(true)
           }}
         />
