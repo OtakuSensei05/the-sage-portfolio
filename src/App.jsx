@@ -4,6 +4,7 @@ import BootSequence from './components/BootSequence'
 import HomeScreen from './components/HomeScreen'
 import ModeShell from './components/ModeShell'
 import ErrorBoundary from './components/ErrorBoundary'
+import CustomCursor from './components/CustomCursor'
 import EngineerMode from './modes/EngineerMode/EngineerMode'
 import SageMode from './modes/SageMode/SageMode'
 import ProjectBlackBox from './modes/ProjectBlackBox/ProjectBlackBox'
@@ -34,21 +35,25 @@ export default function App() {
 
   if (!booted) {
     return (
-      <AnimatePresence>
-        <BootSequence
-          key="boot"
-          onComplete={() => {
-            play('activate.mp3', 0.3)
-            startAmbient()
-            setBooted(true)
-          }}
-        />
-      </AnimatePresence>
+      <>
+        <CustomCursor />
+        <AnimatePresence>
+          <BootSequence
+            key="boot"
+            onComplete={() => {
+              play('activate.mp3', 0.3)
+              startAmbient()
+              setBooted(true)
+            }}
+          />
+        </AnimatePresence>
+      </>
     )
   }
 
   return (
     <ErrorBoundary>
+      <CustomCursor />
       <AnimatePresence mode="wait">
         {!activeMode ? (
           <motion.div key="home" exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>

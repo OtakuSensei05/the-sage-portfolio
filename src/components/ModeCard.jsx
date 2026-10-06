@@ -1,5 +1,7 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { getMode } from '../lib/theme'
+import { useMagnetic } from '../lib/useMagnetic'
 
 const ICONS = {
   engineer: (
@@ -19,28 +21,44 @@ const ICONS = {
 
 export default function ModeCard({ modeId, description, onSelect, index = 0 }) {
   const mode = getMode(modeId)
+  // A subtle magnetic pull toward the cursor on these three primary CTAs
+  // only (not applied site-wide — restraint is the point). This lives on
+  // its own inner element, separate from the outer entrance animation
+  // below — both would otherwise try to animate the same `y` transform
+  // (Framer Motion doesn't handle an external motion value and an
+  // initial/animate value competing for the same property well), so the
+  // staggered slide-up on mount and the magnetic offset never collide.
+  const buttonRef = useRef(null)
+  const magnetic = useMagnetic(buttonRef, 0.2)
   return (
-    <motion.button
-      type="button"
-      onClick={() => onSelect(modeId)}
+    <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 * index, duration: 0.6, ease: 'easeOut' }}
-      whileHover={{ y: -4 }}
-      className="sage-mode-card"
-      style={{ '--card-accent': mode.accent }}
     >
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.4" className="sage-mode-card__icon">
-        {ICONS[modeId]}
-      </svg>
-      <span className="sage-mode-card__title">{mode.label}</span>
-      <span className="sage-mode-card__desc">{description}</span>
-      <span className="sage-mode-card__enter">
-        Enter
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
+      <motion.button
+        ref={buttonRef}
+        onMouseMove={magnetic.onMouseMove}
+        onMouseLeave={magnetic.onMouseLeave}
+        type="button"
+        onClick={() => onSelect(modeId)}
+        whileHover={{ scale: 1.025 }}
+        whileTap={{ scale: 0.98 }}
+        className="sage-mode-card"
+        style={{ '--card-accent': mode.accent, ...magnetic.style }}
+      >
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.4" className="sage-mode-card__icon">
+          {ICONS[modeId]}
         </svg>
-      </span>
-    </motion.button>
+        <span className="sage-mode-card__title">{mode.label}</span>
+        <span className="sage-mode-card__desc">{description}</span>
+        <span className="sage-mode-card__enter">
+          Enter
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </motion.button>
+    </motion.div>
   )
 }

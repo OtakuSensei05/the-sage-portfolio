@@ -369,3 +369,21 @@ body {
     animation: none;
   }
 }
+
+/* ── Dynamic cursor glow ──────────────────────────────────────────────── */
+.sage-cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  margin-top: -11px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(111, 183, 255, 0.85), transparent 72%);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
