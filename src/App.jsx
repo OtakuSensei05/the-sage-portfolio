@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import BootSequence from './components/BootSequence'
 import HomeScreen from './components/HomeScreen'
 import ModeShell from './components/ModeShell'
@@ -33,9 +33,19 @@ export default function App() {
     navigate(path === 'home' ? '/' : `/${path}`)
   }
 
+  // MotionConfig's reducedMotion="user" makes every nested motion.* component
+  // automatically honor the OS/browser prefers-reduced-motion setting —
+  // this is the one change that actually reaches Framer Motion's animations
+  // (page transitions, boot sequence reveals, card entrances). The global
+  // CSS reduced-motion rule in index.css only catches CSS-native animation/
+  // transition properties; Framer Motion animates via JavaScript, so it was
+  // invisible to that rule entirely until this wrapper. Framer strips out
+  // transform-based motion (the kind that actually causes discomfort) while
+  // still allowing simple opacity fades, which is the right nuance rather
+  // than a blunt all-animation-off switch.
   if (!booted) {
     return (
-      <>
+      <MotionConfig reducedMotion="user">
         <CustomCursor />
         <AnimatePresence>
           <BootSequence
@@ -47,36 +57,38 @@ export default function App() {
             }}
           />
         </AnimatePresence>
-      </>
+      </MotionConfig>
     )
   }
 
   return (
-    <ErrorBoundary>
-      <CustomCursor />
-      <AnimatePresence mode="wait">
-        {!activeMode ? (
-          <motion.div key="home" exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-            <HomeScreen onNavigate={goTo} />
-          </motion.div>
-        ) : (
-          <motion.div key={activeMode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-            <ModeShell modeId={activeMode} onNavigate={goTo}>
-              <ErrorBoundary>
-                {activeMode === 'engineer' && <EngineerMode />}
-                {activeMode === 'sage' && <SageMode />}
-                {activeMode === 'blackbox' && (
-                  <ProjectBlackBox
-                    slug={slug}
-                    onOpenProject={(s) => navigate(`/blackbox/${s}`)}
-                    onBack={() => navigate('/blackbox')}
-                  />
-                )}
-              </ErrorBoundary>
-            </ModeShell>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </ErrorBoundary>
+    <MotionConfig reducedMotion="user">
+      <ErrorBoundary>
+        <CustomCursor />
+        <AnimatePresence mode="wait">
+          {!activeMode ? (
+            <motion.div key="home" exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+              <HomeScreen onNavigate={goTo} />
+            </motion.div>
+          ) : (
+            <motion.div key={activeMode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+              <ModeShell modeId={activeMode} onNavigate={goTo}>
+                <ErrorBoundary>
+                  {activeMode === 'engineer' && <EngineerMode />}
+                  {activeMode === 'sage' && <SageMode />}
+                  {activeMode === 'blackbox' && (
+                    <ProjectBlackBox
+                      slug={slug}
+                      onOpenProject={(s) => navigate(`/blackbox/${s}`)}
+                      onBack={() => navigate('/blackbox')}
+                    />
+                  )}
+                </ErrorBoundary>
+              </ModeShell>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ErrorBoundary>
+    </MotionConfig>
   )
 }

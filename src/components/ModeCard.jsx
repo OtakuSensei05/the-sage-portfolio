@@ -47,14 +47,23 @@ export default function ModeCard({ modeId, description, onSelect, index = 0 }) {
         className="sage-mode-card"
         style={{ '--card-accent': mode.accent, ...magnetic.style }}
       >
-        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.4" className="sage-mode-card__icon">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="26"
+          height="26"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          className="sage-mode-card__icon"
+        >
           {ICONS[modeId]}
         </svg>
         <span className="sage-mode-card__title">{mode.label}</span>
         <span className="sage-mode-card__desc">{description}</span>
         <span className="sage-mode-card__enter">
           Enter
-          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <svg aria-hidden="true" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.6">
             <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>

@@ -8,7 +8,7 @@ export default function ProjectDetail({ project, onBack }) {
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
       <button type="button" onClick={onBack} className="sage-btn-ghost mb-8">
-        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <svg aria-hidden="true" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.6">
           <path d="M13 8H3.5M7.5 3.5 3 8l4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         Back to Project Blackbox
@@ -95,6 +95,7 @@ function SectionBody({ type, value }) {
         {value.map((link, i) => (
           <a key={i} href={link.href} target="_blank" rel="noreferrer" className="sage-btn-ghost">
             {link.label}
+            <span className="sr-only"> (opens in a new tab)</span>
           </a>
         ))}
       </div>

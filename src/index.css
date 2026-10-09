@@ -387,3 +387,19 @@ body {
   transition: opacity 0.2s ease;
   will-change: transform;
 }
+
+/* ── Screen-reader-only text ──────────────────────────────────────────── */
+/* Visually hidden but still announced by screen readers — the standard
+   accessible pattern for context sighted users get from layout/icons alone
+   (e.g. "opens in a new tab") but screen reader users need spelled out. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
