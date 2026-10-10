@@ -46,6 +46,24 @@ export default function BootSequence({ onComplete }) {
       transition={{ duration: 0.6 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-void px-6 font-mono text-sm text-slate-300"
     >
+      {/*
+        Visually hidden, but present in the DOM from the very first render --
+        before any interaction, before the "Enter system" click. This exists
+        for two audiences at once: a screen reader user who hasn't clicked
+        through yet gets real context immediately instead of just boot-
+        sequence chrome, and a search engine crawler (which generally
+        doesn't simulate clicking buttons) sees substantive, real content
+        about Kelvin on its very first pass rather than only "INITIALIZING
+        SAGE NETWORK" -- directly relevant to being findable by name search.
+        Every fact here is pulled from profile.js, nothing invented.
+      */}
+      <div className="sr-only">
+        <h1>{profile.fullName}</h1>
+        <p>
+          {profile.role} at {profile.university}, {profile.country}. {profile.bio.join(' ')}
+        </p>
+      </div>
+
       <div className="w-full max-w-sm">
         {/*
           role="status" scoped to just this block (the lines that actually

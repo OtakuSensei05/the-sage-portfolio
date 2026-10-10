@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  This site uses hash-based routing (#/engineer, #/sage, #/blackbox) rather
+  than real separate URLs. Search engines generally treat everything after
+  a # as the same page as the root, so only the root URL is listed here --
+  listing the hash routes as separate sitemap entries would be misleading,
+  since they aren't actually independently indexable pages.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://the-sage-portfolio.vercel.app/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
